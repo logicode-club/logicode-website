@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Logicode - Coding Club TKIET Warananagar. Think | Code | Innovate">
+    <meta name="keywords" content="coding club, programming, TKIET, Warananagar, logicode">
+    <title><%= title %> | <%= siteName %></title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/pages.css">
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logo.png" alt="Logicode Logo">
+                    <span>LOGICODE</span>
+                </a>
+                
+                <div class="nav-menu" id="navMenu">
+                    <ul class="nav-links">
+                        <li><a href="/" class="<%= title === 'Home' ? 'active' : '' %>">Home</a></li>
+                        <li><a href="/about" class="<%= title === 'About Us' ? 'active' : '' %>">About</a></li>
+                        <li><a href="/team" class="<%= title === 'Our Team' ? 'active' : '' %>">Team</a></li>
+                        <li><a href="/projects" class="<%= title === 'Projects' ? 'active' : '' %>">Projects</a></li>
+                        <li><a href="/events" class="<%= title === 'Events' ? 'active' : '' %>">Events</a></li>
+                        <li><a href="/blogs" class="<%= title === 'Blogs' ? 'active' : '' %>">Blog</a></li>
+                        <li><a href="/gallery" class="<%= title === 'Gallery' ? 'active' : '' %>">Gallery</a></li>
+                        <li><a href="/contact" class="<%= title === 'Contact Us' ? 'active' : '' %>">Contact</a></li>
+                    </ul>
+                    
+                    <div class="nav-actions">
+                        <% if (user) { %>
+                            <div class="user-menu">
+                                <button class="user-btn">
+                                    <img src="<%= user.profileImage %>" alt="<%= user.name %>">
+                                    <span><%= user.name %></span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                                    <% if (user.role === 'admin' || user.role === 'core') { %>
+                                        <a href="/admin"><i class="fas fa-cog"></i> Admin Panel</a>
+                                    <% } %>
+                                    <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+                                    <a href="/api/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <a href="/login" class="btn btn-outline">Login</a>
+                            <a href="/register" class="btn btn-primary">Join Now</a>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+

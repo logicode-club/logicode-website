@@ -1,0 +1,443 @@
+<%- include('partials/header') %>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Our <span class="gradient-text">Blog</span></h1>
+        <p class="page-subtitle">Insights, tutorials, and stories from our community</p>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="filter-section">
+    <div class="container">
+        <div class="filter-wrapper">
+            <div class="category-filters">
+                <button class="category-btn <%= selectedCategory === 'all' ? 'active' : '' %>" data-category="all">
+                    All Posts
+                </button>
+                <% categories.forEach(category => { %>
+                    <button class="category-btn <%= selectedCategory === category ? 'active' : '' %>" data-category="<%= category %>">
+                        <%= category %>
+                    </button>
+                <% }); %>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search articles..." value="<%= searchQuery %>">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blogs Grid -->
+<section class="blogs-section">
+    <div class="container">
+        <% if (blogs && blogs.length > 0) { %>
+            <div class="blogs-grid">
+                <% blogs.forEach(blog => { %>
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <img src="<%= blog.coverImage %>" alt="<%= blog.title %>">
+                            <% if (blog.isFeatured) { %>
+                                <span class="featured-badge">
+                                    <i class="fas fa-star"></i> Featured
+                                </span>
+                            <% } %>
+                        </div>
+                        
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="blog-category"><%= blog.category %></span>
+                                <span class="blog-date">
+                                    <i class="fas fa-calendar"></i>
+                                    <%= new Date(blog.publishedAt || blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                </span>
+                            </div>
+                            
+                            <h3 class="blog-title"><%= blog.title %></h3>
+                            
+                            <% if (blog.excerpt) { %>
+                                <p class="blog-excerpt"><%= blog.excerpt %></p>
+                            <% } else { %>
+                                <p class="blog-excerpt"><%= blog.content.substring(0, 150).replace(/<[^>]*>/g, '') %>...</p>
+                            <% } %>
+                            
+                            <div class="blog-footer">
+                                <div class="blog-author">
+                                    <img src="<%= blog.author.profileImage %>" alt="<%= blog.author.name %>">
+                                    <div class="author-info">
+                                        <span class="author-name"><%= blog.author.name %></span>
+                                        <span class="read-time">
+                                            <i class="fas fa-clock"></i> <%= blog.readTime || 5 %> min read
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="blog-stats">
+                                    <span class="stat-item">
+                                        <i class="fas fa-eye"></i> <%= blog.views %>
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-heart"></i> <%= blog.likes ? blog.likes.length : 0 %>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <% if (blog.tags && blog.tags.length > 0) { %>
+                                <div class="blog-tags">
+                                    <% blog.tags.slice(0, 3).forEach(tag => { %>
+                                        <span class="tag">#<%= tag %></span>
+                                    <% }); %>
+                                </div>
+                            <% } %>
+                            
+                            <a href="/blogs/<%= blog._id %>" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="no-blogs">
+                <i class="fas fa-book-open"></i>
+                <h3>No Blog Posts Found</h3>
+                <p>No articles match your search criteria.</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Write Blog CTA (for logged-in users) -->
+<% if (user) { %>
+<section class="write-blog-cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Have Something to Share?</h2>
+            <p>Write your own blog post and share your knowledge with the community!</p>
+            <a href="/blogs/create" class="btn btn-primary btn-lg">
+                <i class="fas fa-pen"></i> Write a Blog
+            </a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<style>
+.page-header {
+    padding: 8rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+}
+
+.filter-section {
+    padding: 2rem 0;
+    background: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.category-filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--dark-bg);
+    color: var(--text-secondary);
+    border: 2px solid transparent;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.category-btn:hover,
+.category-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    background: var(--dark-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 2rem;
+    color: var(--text-primary);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.blogs-section {
+    padding: 4rem 0;
+}
+
+.blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.blog-card {
+    background: var(--light-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.blog-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.blog-card:hover .blog-image img {
+    transform: scale(1.1);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.blog-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.blog-category {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.blog-date {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blog-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.blog-excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.blog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.blog-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.blog-author img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.read-time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.blog-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-item {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tag {
+    background: var(--dark-bg);
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.read-more-btn:hover {
+    gap: 0.75rem;
+}
+
+.no-blogs {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.no-blogs i {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.write-blog-cta {
+    padding: 3rem 0;
+    background: var(--light-bg);
+}
+
+@media (max-width: 768px) {
+    .filter-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .blogs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const category = btn.dataset.category;
+        window.location.href = `/blogs?category=${category}`;
+    });
+});
+
+// Search
+const searchInput = document.getElementById('searchInput');
+let searchTimeout;
+
+searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const search = e.target.value;
+        const currentCategory = new URLSearchParams(window.location.search).get('category') || 'all';
+        window.location.href = `/blogs?category=${currentCategory}&search=${search}`;
+    }, 500);
+});
+</script>
+
+<%- include('partials/footer') %>
+

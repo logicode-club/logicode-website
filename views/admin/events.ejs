@@ -1,0 +1,420 @@
+<%- include('../partials/header') %>
+
+<section class="admin-header">
+    <div class="container">
+        <div class="admin-title">
+            <h1><i class="fas fa-calendar-alt"></i> Event Management</h1>
+            <p>Create, edit, and manage all events</p>
+        </div>
+        <div class="admin-actions">
+            <a href="/admin" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <button class="btn btn-primary" id="createEventBtn">
+                <i class="fas fa-plus"></i> Create Event
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="admin-content">
+    <div class="container">
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="tab-btn active" data-status="all">All Events</button>
+            <button class="tab-btn" data-status="upcoming">Upcoming</button>
+            <button class="tab-btn" data-status="ongoing">Ongoing</button>
+            <button class="tab-btn" data-status="completed">Completed</button>
+        </div>
+
+        <!-- Events Table -->
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Banner</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Participants</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="eventsTableBody">
+                    <!-- Events will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Create/Edit Event Modal -->
+<div id="eventModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h2 id="modalTitle">Create Event</h2>
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form id="eventForm" class="modal-body">
+            <input type="hidden" id="eventId">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-heading"></i> Event Title *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventType"><i class="fas fa-tag"></i> Event Type *</label>
+                    <select id="eventType" name="eventType" required>
+                        <option value="">Select Type</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="competition">Competition</option>
+                        <option value="hackathon">Hackathon</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="meetup">Meetup</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description"><i class="fas fa-align-left"></i> Description *</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startDate"><i class="fas fa-calendar"></i> Start Date & Time *</label>
+                    <input type="datetime-local" id="startDate" name="startDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="endDate"><i class="fas fa-calendar-check"></i> End Date & Time *</label>
+                    <input type="datetime-local" id="endDate" name="endDate" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="venue"><i class="fas fa-map-marker-alt"></i> Venue *</label>
+                    <input type="text" id="venue" name="venue" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="maxParticipants"><i class="fas fa-users"></i> Max Participants</label>
+                    <input type="number" id="maxParticipants" name="maxParticipants" min="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="banner"><i class="fas fa-image"></i> Banner URL</label>
+                <input type="url" id="banner" name="banner" placeholder="https://example.com/banner.jpg">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isOnline" name="isOnline">
+                        <span>Online Event</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="registrationOpen" name="registrationOpen" checked>
+                        <span>Registration Open</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="eventCodeGroup" style="display: none;">
+                <label for="eventCode"><i class="fas fa-key"></i> Event Code</label>
+                <input type="text" id="eventCode" name="eventCode">
+                <small>Optional: Code for participants to access the event</small>
+            </div>
+        </form>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline modal-close">Cancel</button>
+            <button type="submit" form="eventForm" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Event
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Participants Modal -->
+<div id="participantsModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Event Participants</h2>
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div id="participantsList"></div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn btn-outline modal-close">Close</button>
+            <button class="btn btn-primary" id="exportParticipants">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-header {
+    padding: 6rem 0 2rem;
+    background: var(--light-bg);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.admin-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-title h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.admin-content {
+    padding: 3rem 0;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--light-bg);
+    color: var(--text-secondary);
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tab-btn:hover,
+.tab-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.admin-table-wrapper {
+    background: var(--light-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table thead {
+    background: var(--dark-bg);
+}
+
+.admin-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.admin-table tbody tr {
+    transition: var(--transition);
+}
+
+.admin-table tbody tr:hover {
+    background: var(--dark-bg);
+}
+
+.event-banner {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-badge.upcoming { background: var(--gradient-primary); color: white; }
+.status-badge.ongoing { background: var(--gradient-success); color: white; }
+.status-badge.completed { background: var(--gradient-warning); color: white; }
+
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.action-btn.edit {
+    background: var(--info);
+    color: white;
+}
+
+.action-btn.delete {
+    background: var(--error);
+    color: white;
+}
+
+.action-btn.view {
+    background: var(--success);
+    color: white;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--light-bg);
+    border-radius: 1rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+}
+
+.modal-content.large {
+    max-width: 900px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark-bg);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: var(--error);
+    color: white;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .admin-table-wrapper {
+        overflow-x: auto;
+    }
+    
+    .admin-table {
+        min-width: 800px;
+    }
+}
+</style>
+
+<script src="/js/admin/events.js"></script>
+
+<%- include('../partials/footer') %>
+

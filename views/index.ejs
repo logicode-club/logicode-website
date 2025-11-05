@@ -1,0 +1,254 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="gradient-text">LOGICODE</span>
+                    <span class="typing-text">Coding Club</span>
+                </h1>
+                <p class="hero-tagline"><%= siteTagline %></p>
+                <p class="hero-description">
+                    Welcome to Logicode, the official coding club of TKIET Warananagar. 
+                    We are a community of passionate developers, innovators, and tech enthusiasts 
+                    dedicated to learning, building, and growing together.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/register" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus"></i> Join Our Community
+                    </a>
+                    <a href="/events" class="btn btn-outline btn-lg">
+                        <i class="fas fa-calendar"></i> Explore Events
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="/images/hero-illustration.svg" alt="Coding Illustration">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Announcements Section -->
+<% if (announcements && announcements.length > 0) { %>
+<section class="announcements-section">
+    <div class="container">
+        <div class="announcements-wrapper">
+            <% announcements.forEach(announcement => { %>
+                <div class="announcement-card <%= announcement.type %> <%= announcement.priority %>">
+                    <div class="announcement-icon">
+                        <% if (announcement.type === 'event') { %>
+                            <i class="fas fa-calendar-alt"></i>
+                        <% } else if (announcement.type === 'success') { %>
+                            <i class="fas fa-check-circle"></i>
+                        <% } else if (announcement.type === 'warning') { %>
+                            <i class="fas fa-exclamation-triangle"></i>
+                        <% } else if (announcement.type === 'error') { %>
+                            <i class="fas fa-times-circle"></i>
+                        <% } else { %>
+                            <i class="fas fa-info-circle"></i>
+                        <% } %>
+                    </div>
+                    <div class="announcement-content">
+                        <h3><%= announcement.title %></h3>
+                        <p><%= announcement.message %></p>
+                        <% if (announcement.link) { %>
+                            <a href="<%= announcement.link %>" class="announcement-link">
+                                <%= announcement.linkText %> <i class="fas fa-arrow-right"></i>
+                            </a>
+                        <% } %>
+                    </div>
+                    <button class="announcement-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Stats Counter Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-target="<%= memberCount %>">0</h3>
+                    <p class="stat-label">Active Members</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-target="<%= eventCount %>">0</h3>
+                    <p class="stat-label">Events Organized</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-target="<%= projectCount %>">0</h3>
+                    <p class="stat-label">Projects Completed</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-target="50">0</h3>
+                    <p class="stat-label">Achievements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Preview Section -->
+<section class="about-preview">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">About <span class="gradient-text">Logicode</span></h2>
+            <p class="section-subtitle">Empowering students through technology and innovation</p>
+        </div>
+        
+        <div class="about-content">
+            <div class="about-image">
+                <img src="/images/about-preview.jpg" alt="Logicode Team">
+            </div>
+            <div class="about-text">
+                <h3>Who We Are</h3>
+                <p>
+                    Logicode is the premier coding club at TKIET Warananagar, bringing together 
+                    students passionate about technology, programming, and innovation. We provide 
+                    a platform for learning, collaboration, and growth in the ever-evolving world 
+                    of technology.
+                </p>
+                <h3>Our Mission</h3>
+                <p>
+                    To foster a culture of innovation and technical excellence by organizing 
+                    workshops, competitions, and projects that enhance practical skills and 
+                    prepare students for real-world challenges.
+                </p>
+                <a href="/about" class="btn btn-primary">Learn More About Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<% if (upcomingEvents && upcomingEvents.length > 0) { %>
+<section class="upcoming-events">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming <span class="gradient-text">Events</span></h2>
+            <p class="section-subtitle">Don't miss out on our exciting events</p>
+        </div>
+        
+        <div class="events-grid">
+            <% upcomingEvents.forEach(event => { %>
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="<%= event.banner %>" alt="<%= event.title %>">
+                        <span class="event-type"><%= event.eventType %></span>
+                    </div>
+                    <div class="event-content">
+                        <h3 class="event-title"><%= event.title %></h3>
+                        <p class="event-description"><%= event.description.substring(0, 100) %>...</p>
+                        <div class="event-meta">
+                            <div class="event-date">
+                                <i class="fas fa-calendar"></i>
+                                <%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                            </div>
+                            <div class="event-venue">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%= event.venue %>
+                            </div>
+                        </div>
+                        <a href="/events/<%= event._id %>" class="btn btn-outline btn-sm">View Details</a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        
+        <div class="section-footer">
+            <a href="/events" class="btn btn-primary">View All Events</a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Featured Projects Section -->
+<% if (featuredProjects && featuredProjects.length > 0) { %>
+<section class="featured-projects">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured <span class="gradient-text">Projects</span></h2>
+            <p class="section-subtitle">Innovative solutions built by our talented members</p>
+        </div>
+        
+        <div class="projects-grid">
+            <% featuredProjects.forEach(project => { %>
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="<%= project.thumbnail %>" alt="<%= project.title %>">
+                        <div class="project-overlay">
+                            <a href="<%= project.githubLink %>" class="project-link" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <% if (project.liveLink) { %>
+                                <a href="<%= project.liveLink %>" class="project-link" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <span class="project-category"><%= project.category %></span>
+                        <h3 class="project-title"><%= project.title %></h3>
+                        <p class="project-description"><%= project.shortDescription %></p>
+                        <div class="project-tech">
+                            <% project.techStack.slice(0, 3).forEach(tech => { %>
+                                <span class="tech-tag"><%= tech %></span>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        
+        <div class="section-footer">
+            <a href="/projects" class="btn btn-primary">View All Projects</a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Your Coding Journey?</h2>
+            <p>Join Logicode today and be part of an amazing community of developers and innovators!</p>
+            <a href="/register" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i> Join Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
+

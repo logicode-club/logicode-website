@@ -1,0 +1,438 @@
+<%- include('partials/header') %>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Our <span class="gradient-text">Events</span></h1>
+        <p class="page-subtitle">Join us in our exciting coding events and workshops</p>
+    </div>
+</section>
+
+<!-- Upcoming Events -->
+<% if (upcomingEvents && upcomingEvents.length > 0) { %>
+<section class="upcoming-events-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming <span class="gradient-text">Events</span></h2>
+            <p class="section-subtitle">Don't miss out on these amazing opportunities</p>
+        </div>
+        
+        <div class="events-grid">
+            <% upcomingEvents.forEach(event => { %>
+                <div class="event-card upcoming">
+                    <div class="event-image">
+                        <img src="<%= event.banner %>" alt="<%= event.title %>">
+                        <span class="event-type-badge <%= event.eventType %>">
+                            <%= event.eventType %>
+                        </span>
+                        <% if (event.isOnline) { %>
+                            <span class="online-badge">
+                                <i class="fas fa-wifi"></i> Online
+                            </span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="event-content">
+                        <h3 class="event-title"><%= event.title %></h3>
+                        <p class="event-description"><%= event.description.substring(0, 120) %>...</p>
+                        
+                        <div class="event-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                <span><%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span><%= new Date(event.startDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><%= event.venue %></span>
+                            </div>
+                        </div>
+                        
+                        <% if (event.participants) { %>
+                            <div class="event-participants">
+                                <i class="fas fa-users"></i>
+                                <span><%= event.participants.length %> registered</span>
+                                <% if (event.maxParticipants > 0) { %>
+                                    <span class="max-participants">/ <%= event.maxParticipants %> max</span>
+                                <% } %>
+                            </div>
+                        <% } %>
+                        
+                        <div class="event-actions">
+                            <% if (event.registrationOpen) { %>
+                                <button class="btn btn-primary register-btn" data-event-id="<%= event._id %>">
+                                    <i class="fas fa-ticket-alt"></i> Register Now
+                                </button>
+                            <% } else { %>
+                                <button class="btn btn-outline" disabled>
+                                    Registration Closed
+                                </button>
+                            <% } %>
+                            <button class="btn btn-outline view-details-btn" data-event-id="<%= event._id %>">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        </div>
+                        
+                        <!-- Countdown Timer -->
+                        <div class="countdown" data-date="<%= event.startDate %>"></div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Past Events -->
+<% if (pastEvents && pastEvents.length > 0) { %>
+<section class="past-events-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Past <span class="gradient-text">Events</span></h2>
+            <p class="section-subtitle">Relive the memories of our successful events</p>
+        </div>
+        
+        <div class="past-events-grid">
+            <% pastEvents.forEach(event => { %>
+                <div class="past-event-card">
+                    <div class="past-event-image">
+                        <img src="<%= event.banner %>" alt="<%= event.title %>">
+                        <div class="event-overlay">
+                            <span class="event-date">
+                                <%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="past-event-content">
+                        <h4><%= event.title %></h4>
+                        <p class="event-type"><%= event.eventType %></p>
+                        <% if (event.participants) { %>
+                            <p class="participants-count">
+                                <i class="fas fa-users"></i> <%= event.participants.length %> participants
+                            </p>
+                        <% } %>
+                        <% if (event.winners && event.winners.length > 0) { %>
+                            <div class="winners-section">
+                                <h5><i class="fas fa-trophy"></i> Winners</h5>
+                                <% event.winners.slice(0, 3).forEach(winner => { %>
+                                    <div class="winner-item">
+                                        <span class="position">🏆 <%= winner.position %></span>
+                                        <span class="winner-name"><%= winner.user.name %></span>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<style>
+.page-header {
+    padding: 8rem 0 4rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+}
+
+.upcoming-events-section,
+.past-events-section {
+    padding: 4rem 0;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+}
+
+.event-card {
+    background: var(--light-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.event-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.event-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-type-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.event-type-badge.workshop { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.event-type-badge.competition { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.event-type-badge.hackathon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.event-type-badge.webinar { background: linear-gradient(135deg, #10b981, #059669); }
+
+.online-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+}
+
+.event-content {
+    padding: 1.5rem;
+}
+
+.event-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.event-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.event-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.meta-item i {
+    color: var(--primary-color);
+    width: 20px;
+}
+
+.event-participants {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+}
+
+.event-participants i {
+    color: var(--primary-color);
+}
+
+.max-participants {
+    color: var(--text-muted);
+}
+
+.event-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.event-actions .btn {
+    flex: 1;
+}
+
+.countdown {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem;
+    background: var(--gradient-primary);
+    border-radius: 0.5rem;
+    color: white;
+}
+
+.countdown-item {
+    text-align: center;
+}
+
+.countdown-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+.past-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.past-event-card {
+    background: var(--light-bg);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.past-event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.past-event-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.past-event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(30%);
+}
+
+.event-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.event-date {
+    color: white;
+    font-weight: 600;
+}
+
+.past-event-content {
+    padding: 1.5rem;
+}
+
+.past-event-content h4 {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+}
+
+.event-type {
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+}
+
+.participants-count {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.winners-section {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.winners-section h5 {
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.winner-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.position {
+    font-weight: 600;
+}
+
+.winner-name {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .events-grid,
+    .past-events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+// Event registration
+document.querySelectorAll('.register-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const eventId = btn.dataset.eventId;
+        
+        try {
+            const response = await fetch(`/api/events/${eventId}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification('Successfully registered for event!', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message || 'Registration failed', 'error');
+            }
+        } catch (error) {
+            showNotification('An error occurred. Please try again.', 'error');
+        }
+    });
+});
+</script>
+
+<%- include('partials/footer') %>
+
